@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Age Calculator</title>
+  <style>
+    /* Full-page gradient background with animation */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(-45deg, #6a11cb, #2575fc, #ff7eb3, #ff758c);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+      color: white;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      width: 450px;
+      transition: transform 0.3s;
+    }
+
+    .container:hover {
+      transform: scale(1.03);
+    }
+
+    h1 {
+      margin-bottom: 25px;
+      font-size: 32px;
+    }
+
+    input {
+      padding: 12px;
+      margin: 6px;
+      border-radius: 8px;
+      border: none;
+      font-size: 18px;
+      width: 80px;
+      text-align: center;
+      outline: none;
+    }
+
+    input:focus {
+      box-shadow: 0 0 10px #ff7eb3;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 25px;
+      background-color: #ff7eb3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #ff4f81;
+    }
+
+    .result {
+      margin-top: 25px;
+      font-size: 20px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🎂 Advanced Age Calculator 🎉</h1>
+    <input type="number" id="day" placeholder="DD" min="1" max="31">
+    <input type="number" id="month" placeholder="MM" min="1" max="12">
+    <input type="number" id="year" placeholder="YYYY" min="1900">
+    <br>
+    <button onclick="calculateAge()">Calculate Age</button>
+    <button onclick="resetFields()">Reset</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function calculateAge() {
+      const day = parseInt(document.getElementById('day').value);
+      const month = parseInt(document.getElementById('month').value) - 1;
+      const year = parseInt(document.getElementById('year').value);
+      const result = document.getElementById('result');
+
+      if (!day || !month || !year) {
+        result.innerHTML = "⚠️ Please enter a valid Date of Birth.";
+        return;
+      }
+
+      const today = new Date();
+      const birthDate = new Date(year, month, day);
+
+      if (birthDate > today) {
+        result.innerHTML = "⚠️ Date of Birth cannot be in the future.";
+        return;
+      }
+
+      // Calculate Age
+      let ageYears = today.getFullYear() - birthDate.getFullYear();
+      let ageMonths = today.getMonth() - birthDate.getMonth();
+      let ageDays = today.getDate() - birthDate.getDate();
+
+      if (ageDays < 0) {
+        ageMonths--;
+        const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+        ageDays += prevMonth;
+      }
+
+      if (ageMonths < 0) {
+        ageYears--;
+        ageMonths += 12;
+      }
+
+      // Next Birthday
+      let nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+      if (nextBirthday < today) {
+        nextBirthday.setFullYear(today.getFullYear() + 1);
+      }
+      const diffTime = nextBirthday - today;
+      const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // Zodiac Sign
+      const zodiac = getZodiac(day, month+1);
+
+      result.innerHTML = `🎉 Your Age: <b>${ageYears}</b> Years, <b>${ageMonths}</b> Months, <b>${ageDays}</b> Days<br>
+                          🗓 Days Left for Next Birthday: <b>${daysLeft}</b><br>
+                          ♈ Your Zodiac Sign: <b>${zodiac}</b>`;
+    }
+
+    function resetFields() {
+      document.getElementById('day').value = '';
+      document.getElementById('month').value = '';
+      document.getElementById('year').value = '';
+      document.getElementById('result').innerHTML = '';
+    }
+
+    function getZodiac(day, month) {
+      const zodiacSigns = [
+        ["Capricorn", 20], ["Aquarius", 19], ["Pisces", 20], ["Aries", 20],
+        ["Taurus", 21], ["Gemini", 21], ["Cancer", 22], ["Leo", 22],
+        ["Virgo", 22], ["Libra", 23], ["Scorpio", 22], ["Sagittarius", 21]
+      ];
+      return (day < zodiacSigns[month-1][1]) ? zodiacSigns[(month-1+11)%12][0] : zodiacSigns[month-1][0];
+    }
+  </script>
+
+</body>
+</html>
+
+
